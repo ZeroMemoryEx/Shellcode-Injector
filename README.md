@@ -12,7 +12,7 @@
 
 # Other Features 
 
-* RtlSetProcessIsCritical used to protect the process from termination , any attempt to terminate the process will cause the windows to crash (Not Stable)
+* RtlSetProcessIsCritical used to protect the process from termination , any attempt to terminate it will cause the system to crash (Not Stable)
 
 # DEMO 
 
