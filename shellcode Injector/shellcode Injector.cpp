@@ -123,9 +123,7 @@ int main(void)
                 {
                     print_good("Thread Created Succesfully 0x%lX\n", thread);
                     if (WaitForSingleObject(thread, INFINITE) != 0b11111111111111111111111111111111)
-                    {
                         print_good("Thread finished Succesfully 0x%lX\n", thread);
-                    }
                     else
                         print_bad("error in WaitForSingleObject 0x%lX\n", GetLastError());
                 }
