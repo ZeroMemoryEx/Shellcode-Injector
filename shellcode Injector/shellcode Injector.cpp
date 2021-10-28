@@ -22,43 +22,6 @@ __forceinline void print_good(const char* format, T const& ... args)
     printf(format, args ...);
 }
 
-/*typedef long(WINAPI* RtlSetProcessIsCritical)(       // turned off because it's not stable
-    IN BOOLEAN NewSettings,
-    OUT BOOLEAN OldSettings,
-    IN BOOLEAN CriticalStop
-    );
-
- BOOL SetPrivilege(BOOL bEnablePrivilege) {                
-    HANDLE Proc, hTocken;
-    Proc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
-    if (!OpenProcessToken(Proc, TOKEN_ALL_ACCESS, &hTocken)) return false;
-
-    TOKEN_PRIVILEGES tp;
-    LUID luid;
-    if (!LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &luid))  return  FALSE;
-    tp.PrivilegeCount = 1;
-    tp.Privileges[0].Luid = luid;
-    if (bEnablePrivilege)
-        tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-    else
-        tp.Privileges[0].Attributes = 0;
-
-    if (!AdjustTokenPrivileges(hTocken, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), (PTOKEN_PRIVILEGES)NULL, (PDWORD)NULL))
-        return FALSE;
-
-    if (GetLastError() == ERROR_NOT_ALL_ASSIGNED) return FALSE;
-    return TRUE;
-}
-void Skinjbir() {
-    RtlSetProcessIsCritical CallAPI;
-    CallAPI = (RtlSetProcessIsCritical)GetProcAddress(LoadLibraryA("NTDLL.dll"), "RtlSetProcessIsCritical");
-
-    if (SetPrivilege(TRUE) && CallAPI != NULL) {
-        CallAPI(TRUE, FALSE, FALSE);
-    }
-}
-
-*/ 
 DWORD GetPID(const char* pn)
 {
     DWORD procId = 0;
