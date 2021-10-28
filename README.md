@@ -10,9 +10,6 @@
 * CreateRemoteThread (used to creates a thread in the virtual memory area of a process)
 * WaitForSingleObject (Waits until the specified object is in the signaled state or the time-out interval elapses)
 
-# Other Features 
-
-* RtlSetProcessIsCritical used to protect the process from termination , any attempt to terminate it will cause the system to crash (Not Stable)
 
 # DEMO 
 
