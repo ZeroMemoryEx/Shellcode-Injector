@@ -9,7 +9,6 @@
 
 #define print(format, ...) fprintf (stderr, format, __VA_ARGS__)
 
-
 DWORD GetPID(const char* pn)
 {
     DWORD procId = 0;
@@ -39,7 +38,7 @@ DWORD GetPID(const char* pn)
     return procId;
 }
 
-int main(void)
+int wmain(void)
 {
     BOOL wp = 0;
     unsigned char ExecBuffer[] =
@@ -91,5 +90,5 @@ int main(void)
         printf("Thread finished Succesfully 0x%lX\n", thread);
     else
         printf("error in WaitForSingleObject 0x%lX\n", GetLastError());
-
+    return 0;
 }
